@@ -12,4 +12,6 @@ object Models {
   case class Device(id: String, geo: Option[Geo])
 
   case class BidRequest(id: String, imp: Option[List[Impression]], site: Site, user: Option[User], device: Option[Device])
+
+  case class BidResponse(id: String, bidRequestId: String, price: Double, adid: Option[String], banner: Option[Banner])
 }
