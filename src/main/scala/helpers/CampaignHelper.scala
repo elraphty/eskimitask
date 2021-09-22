@@ -5,11 +5,14 @@ import models.Models.{BidRequest, FindBanner, Banner}
 
 object CampaignHelper {
   def findCampaign(input: BidRequest): Seq[FindBanner] = {
-    val data = activeCampaigns.flatMap(cam => {
+    // convert the impress list to vector for fast searching
+    val impression = input.imp.get.toVector
+
+    val data = activeCampaigns.flatMap(camp => {
       for {
-        t <- cam.targeting.targetedSiteIds.find(t => t == input.site.id)
-        b <- cam.banners.find(b => b.width == 300 && b.height == 250)
-      } yield FindBanner(cam.id, t, b)
+        t <- camp.targeting.targetedSiteIds.find(t => t == input.site.id)
+        b <- camp.banners.find(b => b.width == impression(0).w.get && b.height == impression(0).h.get)
+      } yield FindBanner(camp.id, t, b)
     })
 
     data
