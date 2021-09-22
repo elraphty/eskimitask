@@ -4,8 +4,19 @@ import Routes.routes
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.complete
 import akka.http.scaladsl.server.{ExceptionHandler, MethodRejection, MissingQueryParamRejection, Rejection, RejectionHandler}
+import db.Db.activeCampaigns
+import models.Models.FindBanner
 
 object Main extends App {
+  val data2: Seq[FindBanner] = activeCampaigns.flatMap(cam => {
+    for {
+      t <- cam.targeting.targetedSiteIds.find(t => t == 1)
+      b <- cam.banners.find(b => b.width == 300)
+    } yield FindBanner(cam.id, t, b)
+  })
+
+  println(data2)
+
   implicit val system: ActorSystem = ActorSystem("ScalaLike");
 
   // Handle rejections
