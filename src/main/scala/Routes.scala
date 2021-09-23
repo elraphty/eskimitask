@@ -1,21 +1,28 @@
 import actors.Bid
-import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.actor.{ActorSystem, Props}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.pattern.ask
 import akka.util.Timeout
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import models.JsonTraits
 import models.Models.{BidRequest, BidResponse, FindBanner, NoResponse}
+import spray.json.enrichAny
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.language.postfixOps
 
 object Routes extends SprayJsonSupport with JsonTraits {
   implicit val system: ActorSystem = ActorSystem("Bidding")
+
+  def CompleteData(code: Int = 0, data: BidResponse): Unit = {
+    complete(data)
+  }
 
   implicit val timeout: Timeout = Timeout(10 seconds);
   val biddingActor = system.actorOf(Props[Bid.BidActor], "bidactor")
@@ -58,14 +65,12 @@ object Routes extends SprayJsonSupport with JsonTraits {
                 complete(400 -> NoResponse(400, "Enter a width and height"))
               } else {
 
-                val data = (biddingActor ? bidRequest).mapTo[List[FindBanner]]
-                println(data.map(x => println(x)))
+                val data: Future[Option[BidResponse]] = (biddingActor ? bidRequest).mapTo[Option[BidResponse]]
 
-                val hello = "hell";
-                if (hello == "hello") {
-                  complete(StatusCodes.OK -> hello)
+                onSuccess(data) {
+                  case None => complete(StatusCodes.NoContent)
+                  case Some(value) => complete(value)
                 }
-                complete(StatusCodes.NoContent)
               }
             }
         }

@@ -46,7 +46,11 @@ object CampaignHelper {
       for {
         t <- camp.targeting.targetedSiteIds.find(t => t == input.site.id)
         // If either of width and height value is = 0, search with a range of min and max width/height
-        b <- if (width > 0 && height > 0) camp.banners.find(b => b.width == width && b.height == height) else camp.banners.find(b => b.width >= minWidth && b.width <= maxWidth && b.height >= minHeight && b.height <= maxHeight)
+        b <- if (width > 0 && height > 0) {
+          camp.banners.find(b => b.width == width && b.height == height)
+        } else {
+          camp.banners.find(b => b.width >= minWidth && b.width <= maxWidth && b.height >= minHeight && b.height <= maxHeight)
+        }
       } yield FindBanner(camp.id, t, b)
     })
 

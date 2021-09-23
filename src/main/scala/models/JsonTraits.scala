@@ -1,6 +1,6 @@
 package models
 
-import models.Models.{Banner, BidRequest, BidResponse, Device, Geo, Impression, NoResponse, Site, User}
+import models.Models.{Banner, BidRequest, BidResponse, Device, FindBanner, Geo, Impression, NoResponse, Site, User}
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 trait JsonTraits extends DefaultJsonProtocol {
@@ -15,6 +15,6 @@ trait JsonTraits extends DefaultJsonProtocol {
   implicit val bidResponseJson: RootJsonFormat[BidResponse] = jsonFormat5(BidResponse)
 
   // Responses
-  implicit val noContentResponse: RootJsonFormat[NoResponse] = jsonFormat2(NoResponse)
+  implicit val noContentJson: RootJsonFormat[NoResponse] = jsonFormat2(NoResponse)
 }
 
