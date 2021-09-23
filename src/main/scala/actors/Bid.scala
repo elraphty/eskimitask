@@ -9,6 +9,7 @@ object Bid {
     override def receive: Receive = {
       case input: BidRequest =>
         val data = findCampaign(input)
+        println(s"DAta from actor $data")
         sender() ! data
     }
   }

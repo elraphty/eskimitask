@@ -18,5 +18,5 @@ object Models {
   case class FindBanner(id: Int, target: Int, banner: Banner)
 
   // Responses
-  case class NoResponse(message: String)
+  case class NoResponse(errorCode:Int, message: String)
 }

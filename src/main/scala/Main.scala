@@ -1,11 +1,9 @@
-import akka.actor.{Actor, ActorSystem}
+import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import Routes.routes
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.complete
 import akka.http.scaladsl.server.{ExceptionHandler, MethodRejection, MissingQueryParamRejection, Rejection, RejectionHandler}
-import db.Db.activeCampaigns
-import models.Models.FindBanner
 
 object Main extends App {
   implicit val system: ActorSystem = ActorSystem("ScalaLike");
@@ -32,6 +30,7 @@ object Main extends App {
     }
     .result()
 
+  // Handle Exceptions
   implicit val customExceptionHandler: ExceptionHandler = ExceptionHandler {
     case e: IllegalArgumentException =>
       println(s"Illegal Argument exception ${e.getMessage}")

@@ -15,6 +15,6 @@ trait JsonTraits extends DefaultJsonProtocol {
   implicit val bidResponseJson: RootJsonFormat[BidResponse] = jsonFormat5(BidResponse)
 
   // Responses
-  implicit val noContentResponse: RootJsonFormat[NoResponse] = jsonFormat1(NoResponse)
+  implicit val noContentResponse: RootJsonFormat[NoResponse] = jsonFormat2(NoResponse)
 }
 
