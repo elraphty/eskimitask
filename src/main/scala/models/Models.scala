@@ -16,7 +16,7 @@ object Models {
 
   case class BidResponse(id: String, bidRequestId: String, price: Double, adid: Option[String], banner: Option[Banner])
 
-  case class FindBanner(id: Int, target: Int, banner: Banner)
+  case class FoundData(id: Int, target: Int, banner: Banner, bid: Double)
 
   // Responses
   case class NoResponse(errorCode:Int, message: String)

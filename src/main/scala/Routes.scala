@@ -2,18 +2,15 @@ import actors.Bid
 import akka.actor.{ActorSystem, Props}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.pattern.ask
 import akka.util.Timeout
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
 import models.JsonTraits
-import models.Models.{BidRequest, BidResponse, FindBanner, NoResponse}
-import spray.json.enrichAny
+import models.Models.{BidRequest, BidResponse, NoResponse}
 
 import scala.concurrent.duration.DurationInt
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.language.postfixOps
 
@@ -62,14 +59,18 @@ object Routes extends SprayJsonSupport with JsonTraits {
               // if  width or height is Empty and all of min and max are None values return an error.
               // there is not need to check for a bid
               if (imp.w.isEmpty || imp.h.isEmpty && imp.hmin.isEmpty && imp.wmin.isEmpty && imp.hmax.isEmpty && imp.wmax.isEmpty) {
-                complete(400 -> NoResponse(400, "Enter a width and height"))
+                complete(400 -> NoResponse(400, "Width and height was not provided"))
               } else {
+                // if there is no bid floor, send back an error.
+                if(imp.bidFloor.isEmpty) {
+                  complete(400 -> NoResponse(400, "Bid floor was not provided"))
+                } else {
+                  val data: Future[Option[BidResponse]] = (biddingActor ? bidRequest).mapTo[Option[BidResponse]]
 
-                val data: Future[Option[BidResponse]] = (biddingActor ? bidRequest).mapTo[Option[BidResponse]]
-
-                onSuccess(data) {
-                  case None => complete(StatusCodes.NoContent)
-                  case Some(value) => complete(value)
+                  onSuccess(data) {
+                    case None => complete(StatusCodes.NoContent)
+                    case Some(value) => complete(value)
+                  }
                 }
               }
             }

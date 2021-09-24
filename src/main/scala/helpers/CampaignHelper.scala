@@ -1,13 +1,14 @@
 package helpers
 
 import db.Db.activeCampaigns
-import models.Models.{BidRequest, FindBanner}
+import models.Models.{BidRequest, Campaign, FoundData}
 
 object CampaignHelper {
-  def findCampaign(input: BidRequest): Seq[FindBanner] = {
+  def findCampaign(input: BidRequest): Seq[FoundData] = {
     // convert the impress list to vector for fast searching
     val impression = input.imp.get.toVector
     val imp = impression(0);
+    var filteredCampaign: Seq[Campaign] = Seq();
 
     var height: Int = 0;
     var width: Int = 0;
@@ -42,7 +43,22 @@ object CampaignHelper {
     }
 
     // Would have preferred doing a query to a Database
-    val data = activeCampaigns.flatMap(camp => {
+    // if there is a device  filter with the device geolocation else filter with bidFloor
+    val country = input.device.get.geo.get.country.get
+
+    if(country.nonEmpty) {
+      filteredCampaign = activeCampaigns.filter(x => {
+        // select a data close to the bidRequest and country code
+        (x.bid >= imp.bidFloor.get && x.bid <= imp.bidFloor.get + 1) && x.country == country
+      })
+    } else {
+      filteredCampaign = activeCampaigns.filter(x => {
+        // select a data close to the bidRequest
+        x.bid >= imp.bidFloor.get && x.bid <= imp.bidFloor.get + 1
+      })
+    }
+
+    val data = filteredCampaign.flatMap(camp => {
       for {
         t <- camp.targeting.targetedSiteIds.find(t => t == input.site.id)
         // If either of width and height value is = 0, search with a range of min and max width/height
@@ -51,7 +67,7 @@ object CampaignHelper {
         } else {
           camp.banners.find(b => b.width >= minWidth && b.width <= maxWidth && b.height >= minHeight && b.height <= maxHeight)
         }
-      } yield FindBanner(camp.id, t, b)
+      } yield FoundData(camp.id, t, b, camp.bid)
     })
 
     data

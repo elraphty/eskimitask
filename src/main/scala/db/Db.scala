@@ -22,7 +22,23 @@ object Db {
     ),
     Campaign(
       id = 2,
-      country = "NG",
+      country = "LT",
+      targeting = Targeting(
+        targetedSiteIds = Vector(1, 3, 4) // Use collection of your choice
+      ),
+      banners = List(
+        Banner(
+          id = 2,
+          src = "https://business.eskimi.com/wp-content/uploads/2020/06/openGraph.jpeg",
+          width = 300,
+          height = 250
+        )
+      ),
+      bid = 3.15
+    ),
+    Campaign(
+      id = 3,
+      country = "LT",
       targeting = Targeting(
         targetedSiteIds = Vector(1, 3, 4) // Use collection of your choice
       ),
@@ -37,7 +53,7 @@ object Db {
       bid = 4d
     ),
     Campaign(
-      id = 3,
+      id = 4,
       country = "US",
       targeting = Targeting(
         targetedSiteIds = Vector(5,6) // Use collection of your choice
@@ -51,6 +67,38 @@ object Db {
         )
       ),
       bid = 3d
+    ),
+    Campaign(
+      id = 5,
+      country = "US",
+      targeting = Targeting(
+        targetedSiteIds = Vector(5,6) // Use collection of your choice
+      ),
+      banners = List(
+        Banner(
+          id = 3,
+          src = "https://business.eskimi.com/wp-content/uploads/2020/06/openGraph.jpeg",
+          width = 300,
+          height = 250
+        )
+      ),
+      bid = 5d
+    ),
+    Campaign(
+      id = 6,
+      country = "NG",
+      targeting = Targeting(
+        targetedSiteIds = Vector(5,6) // Use collection of your choice
+      ),
+      banners = List(
+        Banner(
+          id = 3,
+          src = "https://business.eskimi.com/wp-content/uploads/2020/06/openGraph.jpeg",
+          width = 300,
+          height = 250
+        )
+      ),
+      bid = 4d
     ),
   )
 }

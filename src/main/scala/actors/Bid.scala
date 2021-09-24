@@ -9,10 +9,18 @@ object Bid {
     override def receive: Receive = {
       case input: BidRequest =>
         val data = findCampaign(input).toVector
+
         if(data.isEmpty) sender() ! None
         else {
-          val bidImpression = input.imp.get
-          sender() ! Some(BidResponse("2333", input.id, bidImpression.head.bidFloor.get, Some("333"),Some(data(0).banner)))
+          // Generate a random number for the string
+          val rand = scala.util.Random
+          val randomInt = rand.nextInt(9999999)
+
+          // Select a random data from the data size
+          val randBid = rand.nextInt(data.size)
+
+          sender() ! Some(BidResponse(randomInt.toString, input.id, data(randBid).bid,
+            Some(data(randBid).id.toString), Some(data(randBid).banner)))
         }
       case _ => sender() ! "Wrong Input"
     }
