@@ -44,7 +44,7 @@ object Db {
       ),
       banners = List(
         Banner(
-          id = 2,
+          id = 3,
           src = "https://business.eskimi.com/wp-content/uploads/2020/06/openGraph.jpeg",
           width = 300,
           height = 250
@@ -60,7 +60,7 @@ object Db {
       ),
       banners = List(
         Banner(
-          id = 3,
+          id = 4,
           src = "https://business.eskimi.com/wp-content/uploads/2020/06/openGraph.jpeg",
           width = 300,
           height = 250
@@ -76,7 +76,7 @@ object Db {
       ),
       banners = List(
         Banner(
-          id = 3,
+          id = 5,
           src = "https://business.eskimi.com/wp-content/uploads/2020/06/openGraph.jpeg",
           width = 300,
           height = 250
@@ -86,16 +86,16 @@ object Db {
     ),
     Campaign(
       id = 6,
-      country = "NG",
+      country = "LT",
       targeting = Targeting(
-        targetedSiteIds = Vector(5,6) // Use collection of your choice
+        targetedSiteIds = Vector(1,5,6) // Use collection of your choice
       ),
       banners = List(
         Banner(
-          id = 3,
+          id = 6,
           src = "https://business.eskimi.com/wp-content/uploads/2020/06/openGraph.jpeg",
-          width = 300,
-          height = 250
+          width = 400,
+          height = 300
         )
       ),
       bid = 4d

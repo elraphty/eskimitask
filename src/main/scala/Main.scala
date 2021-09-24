@@ -3,7 +3,8 @@ import akka.http.scaladsl.Http
 import Routes.routes
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives.complete
-import akka.http.scaladsl.server.{ExceptionHandler, MethodRejection, MissingQueryParamRejection, Rejection, RejectionHandler}
+import akka.http.scaladsl.server.{ExceptionHandler, MethodRejection,
+  MissingQueryParamRejection, Rejection, RejectionHandler}
 
 object Main extends App {
   implicit val system: ActorSystem = ActorSystem("ScalaLike");

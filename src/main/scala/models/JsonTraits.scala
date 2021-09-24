@@ -1,6 +1,6 @@
 package models
 
-import models.Models.{Banner, BidRequest, BidResponse, Device, FoundData, Geo, Impression, NoResponse, Site, User}
+import models.Models.{Banner, BidRequest, BidResponse, Device, Geo, Impression, NoResponse, Site, User}
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 trait JsonTraits extends DefaultJsonProtocol {

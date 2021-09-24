@@ -16,14 +16,9 @@ import scala.language.postfixOps
 
 object Routes extends SprayJsonSupport with JsonTraits {
   implicit val system: ActorSystem = ActorSystem("Bidding")
-
-  def CompleteData(code: Int = 0, data: BidResponse): Unit = {
-    complete(data)
-  }
-
-  implicit val timeout: Timeout = Timeout(10 seconds);
   val biddingActor = system.actorOf(Props[Bid.BidActor], "bidactor")
 
+  implicit val timeout: Timeout = Timeout(10 seconds);
   val routes: Route = cors() {
     path("") {
       get {
@@ -44,33 +39,23 @@ object Routes extends SprayJsonSupport with JsonTraits {
       post {
         entity(as[BidRequest]) {
           bidRequest =>
-            // convert the impression list to vector for fast searching
-            val impression = bidRequest.imp.get.toVector
-
-            // Return Error if impression array is empty
-            if (impression.isEmpty) {
-              complete(400 -> NoResponse(400, "Enter Impression values"))
+            // Could have used akka-http validate, but I wanted a JSON Response
+            // validate(bidRequest.imp.isEmpty && bidRequest.user.isEmpty, "Enter a width and height"){}
+            if (bidRequest.imp.isEmpty || bidRequest.device.isEmpty) {
+              complete(400 -> NoResponse(400, "Your request data is not valid"))
             } else {
-              val imp = impression(0)
+              // convert the impression list to vector for fast searching
+              val impression = bidRequest.imp.get.toVector
 
-              // Could have used akka-http validate, but I wanted a JSON Response
-              // validate(imp.h.isDefined && imp.w.isDefined, "Enter a width and height"){}
-
-              // if  width or height is Empty and all of min and max are None values return an error.
-              // there is not need to check for a bid
-              if (imp.w.isEmpty || imp.h.isEmpty && imp.hmin.isEmpty && imp.wmin.isEmpty && imp.hmax.isEmpty && imp.wmax.isEmpty) {
-                complete(400 -> NoResponse(400, "Width and height was not provided"))
+              // Return Error if impression array is empty
+              if (impression.isEmpty) {
+                complete(400 -> NoResponse(400, "Specify Impression values"))
               } else {
-                // if there is no bid floor, send back an error.
-                if(imp.bidFloor.isEmpty) {
-                  complete(400 -> NoResponse(400, "Bid floor was not provided"))
-                } else {
-                  val data: Future[Option[BidResponse]] = (biddingActor ? bidRequest).mapTo[Option[BidResponse]]
+                val data: Future[Option[BidResponse]] = (biddingActor ? bidRequest).mapTo[Option[BidResponse]]
 
-                  onSuccess(data) {
-                    case None => complete(StatusCodes.NoContent)
-                    case Some(value) => complete(value)
-                  }
+                onSuccess(data) {
+                  case None => complete(StatusCodes.NoContent)
+                  case Some(value) => complete(value)
                 }
               }
             }
