@@ -1,5 +1,5 @@
 import actors.Bid
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
@@ -14,11 +14,15 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.Future
 import scala.language.postfixOps
 
+trait SimpleJson extends JsonTraits
+
 object Routes extends SprayJsonSupport with JsonTraits {
   implicit val system: ActorSystem = ActorSystem("Bidding")
-  val biddingActor = system.actorOf(Props[Bid.BidActor], "bidactor")
+
+  val biddingActor: ActorRef = system.actorOf(Props[Bid.BidActor], "bidactor")
 
   implicit val timeout: Timeout = Timeout(10 seconds);
+
   val routes: Route = cors() {
     path("") {
       get {
