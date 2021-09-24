@@ -7,14 +7,13 @@ import akka.http.scaladsl.server.Route
 import akka.pattern.ask
 import akka.util.Timeout
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
-import models.JsonTraits
+
 import models.Models.{BidRequest, BidResponse, NoResponse}
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.Future
 import scala.language.postfixOps
-
-trait SimpleJson extends JsonTraits
+import models.JsonTraits
 
 object Routes extends SprayJsonSupport with JsonTraits {
   implicit val system: ActorSystem = ActorSystem("Bidding")

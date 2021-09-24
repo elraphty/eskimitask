@@ -1,7 +1,7 @@
 package helpers
 
 import db.Db.activeCampaigns
-import models.Models.{Banner, BidRequest, Campaign, FoundData}
+import models.Models.{BidRequest, Campaign, FoundData}
 
 object CampaignHelper {
   def findCampaign(input: BidRequest): Seq[FoundData] = {
