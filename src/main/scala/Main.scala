@@ -41,5 +41,7 @@ object Main extends App {
       complete(StatusCodes.NotFound, e.getMessage)
   }
 
-  Http().newServerAt("localhost", 8083).bind(routes)
+  println("Running ON PORT 8083")
+
+  Http().newServerAt("0.0.0.0", 8083).bind(routes)
 }

@@ -21,6 +21,13 @@ else No content will be returned
 -  GET / 8083 is the index route
 -  POST /bidrequest (requires a JSON BidRequest Input)
 
-## How To RUN With Docker AND Docker Composse
+## How To RUN With Docker
+ - Build the docker image by running this command 
+   
+   sbt docker:publishLocal
+ - after building the image RUN docker images command to 
+   view the image ID of the created image
+   
+ - Then RUN docker run -t -p 8081:8083 <:IMAGEID>
 
   
