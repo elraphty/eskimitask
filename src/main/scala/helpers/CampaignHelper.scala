@@ -13,39 +13,14 @@ object CampaignHelper {
     var foundCampaigns: Seq[FoundData] = Seq();
 
     impression.foreach(imp => {
-      var height: Int = 0;
-      var width: Int = 0;
-      var minWidth: Int = 0
-      var minHeight: Int = 0
-      var maxWidth: Int = 0
-      var maxHeight: Int = 0
+      var height: Int = imp.h.getOrElse(0)
+      var width: Int = imp.w.getOrElse(0)
+      var minWidth: Int = imp.wmin.getOrElse(0)
+      var minHeight: Int = imp.hmin.getOrElse(0)
+      var maxWidth: Int = imp.hmax.getOrElse(0)
+      var maxHeight: Int = imp.hmax.getOrElse(0)
 
       var loopFilteredCampaign: Seq[Campaign] = Seq();
-
-      // check if there are values for height and width else fall back to minimum width, and height
-      if (imp.w.isDefined) {
-        width = imp.w.get
-      }
-
-      if (imp.h.isDefined) {
-        height = imp.h.get
-      }
-
-      if (imp.hmin.isDefined) {
-        minHeight = imp.hmin.get
-      }
-
-      if (imp.hmax.isDefined) {
-        maxHeight = imp.hmax.get
-      }
-
-      if (imp.wmin.isDefined) {
-        minWidth = imp.wmin.get
-      }
-
-      if (imp.wmax.isDefined) {
-        maxWidth = imp.wmax.get
-      }
 
       // VALIDATE BID FLOOR AND COUNTRY
 
