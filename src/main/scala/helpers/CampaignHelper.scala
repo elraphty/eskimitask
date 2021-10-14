@@ -13,57 +13,31 @@ object CampaignHelper {
     var foundCampaigns: Seq[FoundData] = Seq();
 
     impression.foreach(imp => {
-      var height: Int = imp.h.getOrElse(0)
-      var width: Int = imp.w.getOrElse(0)
-      var minWidth: Int = imp.wmin.getOrElse(0)
-      var minHeight: Int = imp.hmin.getOrElse(0)
-      var maxWidth: Int = imp.hmax.getOrElse(0)
-      var maxHeight: Int = imp.hmax.getOrElse(0)
+      val height: Int = imp.h.getOrElse(0)
+      val width: Int = imp.w.getOrElse(0)
+      val minWidth: Int = imp.wmin.getOrElse(0)
+      val minHeight: Int = imp.hmin.getOrElse(0)
+      val maxWidth: Int = imp.hmax.getOrElse(0)
+      val maxHeight: Int = imp.hmax.getOrElse(0)
 
-      var loopFilteredCampaign: Seq[Campaign] = Seq();
+      val campaigns = for {
+        active <- activeCampaigns
+        if ((active.bid >= imp.bidFloor.get && active.bid <= imp.bidFloor.get + 1) && active.country == country)
 
-      // VALIDATE BID FLOOR AND COUNTRY
+        // targeting sites
+        t <- active.targeting.targetedSiteIds
+        if(t == input.site.id)
 
-      // If bid floor and country is defined filter with both values else if either of
-      // country or bid floor is defined filter with their values else, don't filter
-      if (country.nonEmpty && imp.bidFloor.isDefined) {
-        loopFilteredCampaign = activeCampaigns.filter(x => {
-          // select a data close to the bidRequest and country code
-          (x.bid >= imp.bidFloor.get && x.bid <= imp.bidFloor.get + 1) && x.country == country
-        })
-      }
-      else if (country.nonEmpty && impression.isEmpty) {
-        loopFilteredCampaign = activeCampaigns.filter(x => {
-          // select a data close to the bidRequest and country code
-          x.country == country
-        })
-      } else if (imp.bidFloor.isDefined && country.isEmpty) {
-        loopFilteredCampaign = activeCampaigns.filter(x => {
-          // select a data close to the bidRequest and country code
-          (x.bid >= imp.bidFloor.get && x.bid <= imp.bidFloor.get + 1)
-        })
-      } else {
-        loopFilteredCampaign = activeCampaigns
-      }
+        // Banners
+        banners <- active.banners
+        if(
+          if(width == 0 || height == 0) banners.width >= minWidth && banners.width <= maxWidth
+          && banners.height >= minHeight && banners.height <= maxHeight
+          else banners.width == width && banners.height == height)
+      } yield FoundData(active.id, t, banners, active.bid)
 
-      // If Width or Height is not provided OR Any of the Min and Max width or height is not provided
-      // Don't run
-      if ((width != 0 && height != 0) || (minWidth != 0 && minHeight != 0 && minHeight != 0 && maxHeight != 0)) {
-        val campaigns: Seq[FoundData] = loopFilteredCampaign.flatMap(camp2 => {
-          for {
-            t <- camp2.targeting.targetedSiteIds.find(t => t == input.site.id)
-            // If either of width and height value is = 0, search with a range of min and max width/height
-            b <- if (width > 0 && height > 0) {
-              camp2.banners.find(b => b.width == width && b.height == height)
-            } else {
-              camp2.banners.find(b => b.width >= minWidth && b.width <= maxWidth
-                && b.height >= minHeight && b.height <= maxHeight)
-            }
-          } yield FoundData(camp2.id, t, b, camp2.bid)
-        })
+      foundCampaigns = foundCampaigns ++ campaigns
 
-        foundCampaigns = foundCampaigns ++ campaigns
-      }
     });
 
     foundCampaigns
